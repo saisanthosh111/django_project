@@ -1,0 +1,103 @@
+{% extends "blog/base.html" %}
+<!-- {% block title %}{{ object.title }}{% endblock %} -->
+{% load static %}
+{% block content %}
+      <!-- <h1>Blog home!</h1> -->
+        <article class="media content-section" style="background:url('{% static "images/xy.jpg" %}');background-size:100%">
+           <img class="rounded-circle article-img" src ={{object.author.profile.image.url}} >
+              <div class="media-body">
+                <div class="article-metadata">
+                  <a class="mr-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+                  <small class="text-muted">{{ object.date_posted| date:"F d,y" }}
+                  </small>
+                  {% if object.author == user %}
+                  <!sm--smaller button>
+                  <div>
+                  <a class= "btn btn-secondary btn-sm mt-1 mb-1"href="{% url 'post-update' object.id %}">UPDATE</a>
+                  <a class= "btn btn-danger btn-sm mt-1 mb-1"href="{% url 'post-delete' object.id %}">DELETE</a>
+                  {% endif %}
+                  &nbsp&nbsp
+                    <a class= "btn btn-warning btn-sm mt-1 mb-1" href="{% url 'home'%}">back</a>
+                </div>
+                </div>
+                <h2 class="article-title" style = "color:#fdf8f8;">{{ object.title }}
+                </h2>
+                <p class="article-content">{{ object.content }}
+                </p>
+                <form  action="{% url 'like_post' post.pk %}" method="POST">
+                  {% csrf_token %}
+                  {% if user.is_authenticated %}
+                     {% if liked %}
+                          <button type="submit" name="post_id" value = "{{ post.id }}" class = "btn btn-danger btn-sm mt-1 mb-1">UnLike</button>
+                     {% else %}
+                          <button type="submit" name="post_id" value = "{{ post.id }}" class = "btn btn-primary btn-sm mt-1 mb-1">Like</button>
+                     {% endif %}
+                  {% else %}
+                     <small><a href="{% url 'login' %}"> please login </a>to like </small>
+                  {% endif %}
+                - {{ total_likes }} Likes
+
+                </form>
+
+              </div>
+        </article>
+
+        <div class="main-comment-section">
+          <div class="container-fluid mt-2">
+            <div class="form-group row">
+              <form  method="post">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                {% if request.user.is_authenticated %}
+                    <input type="submit" value="submit" class="btn btn-outline-success">
+                {% else %}
+                   <input type="submit" value="submit" class="btn btn-outline-success" disabled>
+                {% endif %}
+              </form>
+            </div>
+
+          </div>
+          {{ comments.count }} Comment{{ comments|pluralize}}
+          {% for comment in comments %}
+              <blockquote class="blockquote">
+                    <p class="mb-0"><small>{{ comment.content }}</small></p>
+                    <footer class="blockquote-footer" style="color:#fdf8f8"><small>by<cite title="Source Title">{{ comment.user|capfirst}}</cite></small>
+                      <button type="button" name="button" class="reply-btn btn btn-outline-dark btn-sm ml-2" style="color:#fdf8f8">Reply</button>
+
+                    </footer>
+
+              </blockquote>
+
+
+        <div class="replied-comments container mt-2" style="display:None;">
+          {% for reply in comment.replies.all %}
+          <blockquote class="blockquote">
+                <p class="mb-0"><small>{{ reply.content }}<small></p>
+                <footer class="blockquote-footer" style="color:#fdf8f8"><small>by<cite title="Source Title">{{ reply.user|capfirst}}</cite></small></footer>
+          </blockquote>
+          {% endfor %}
+            <div class="form-group row">
+                <form  method="post">
+                      {% csrf_token %}
+                      <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                      {{ comment_form.as_p }}
+                      {% if request.user.is_authenticated %}
+                            <input type="submit" value="submit" class="btn btn-outline-success">
+                      {% else %}
+                            <input type="submit" value="submit" class="btn btn-outline-success" disabled>
+                      {% endif %}
+                </form>
+             </div>
+        </div>
+          {% endfor %}
+
+         </div>
+        <!-- <br/><br/>
+        <hr>
+        <br/>
+        <form  action="{% url 'like_post' post.pk %}" method="POST">
+          {% csrf_token %}
+          <button type="submit",name="post_id",value = "{{ post.id }},class = "btn btn-primary btn-sm">Like</button>
+        - {{ total_likes }} Likes
+        </form> -->
+{% endblock content %}

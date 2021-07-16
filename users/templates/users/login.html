@@ -1,0 +1,30 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{%load static %}
+{% block content %}
+
+      <div class="content-section" style="background:url('{% static "images/xy.jpg" %}');background-size:100%">
+      	<form method="POST">
+      		<!It increases the security>
+      		{%csrf_token%}
+      		<fieldset class="form-group">
+      			<legend class="border-bottom mb-4" style="text-align: center; color:#fdf8f8">Login to your account</legend>
+      			{{form|crispy}}
+      			<! we add a tag to get nicely in the form of table that is paragraph>
+      		</fieldset>
+      		<div class="form-group">
+      			<button class="btn btn-outline-info" type="submit" >Login</button>
+                        <small class="text-muted ml-2">
+                              <a href="{% url 'password_reset' %}">Forgot password? </a>
+                        </small>
+      		</div>
+      	</form>
+      	<div class="border-top pt-3">
+<small class="text-muted">
+    Need an account
+	<a class="ml-2" href="{% url 'register' %}">Sign up</a>
+</small>
+      	</div>
+      </div>
+
+{% endblock content %}
